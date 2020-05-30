@@ -1,0 +1,16 @@
+{
+  "name": "simple-data",
+  "version": "0.0.1",
+  "description": "",
+  "main": "./src/Base.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+  },
+  "homepage": ""
+}
