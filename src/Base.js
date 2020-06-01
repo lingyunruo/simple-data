@@ -52,9 +52,6 @@ class Base {
             if(key in this.data) {
                 returnData = this.data[key];
             }
-            else {
-                returnData = null;
-            }
 
             resolve(returnData);
         });   
