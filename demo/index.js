@@ -6,8 +6,6 @@ const data = new Base({
     basePath: path.join(__dirname, './persistence')
 });
 
-
-
 data.set({
     name: 'abc',
     age: '111'
@@ -20,11 +18,22 @@ data.set({
     name: 'erf'
 });
 data.set({
-    name: 'abggg'
+    code: '980000'
 });
+
+data.delete(['name']);
+data.delete('name');
+
 data.set({
-    name: 'abcaa'
+    department: 'nnnnnn'
+})
+    .then((res) => {
+        console.log(res, 'set then');
+    });
+
+data.get().then((res) => {
+    console.log(res, 'read all');
 });
-data.set({
-    name: 'abjjjc'
+data.get(['name', 'department']).then((res) => {
+    console.log(res, 'read part');
 });

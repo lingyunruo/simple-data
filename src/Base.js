@@ -8,49 +8,78 @@ class Base {
         // 每个base对应一个 json文件
         this.path = option.jsonFile;
         this.basePath = option.basePath;
-        this.readFileData();
         this.data = {};
-        this.reading = false;
+        this.readFileData();
     }
 
-    readFileData () {
-        this.reading = true;
-        return new Promise((resolve, reject) => {
-            fs.readFile(path.join(this.basePath, this.path), {
+    readFileData() {
+        let content = '';
+        
+        try {
+            content = fs.readFileSync(path.join(this.basePath, this.path), {
                 encoding: 'utf8'
-            }, (err, content) => {
-                this.reading = false;
-                if(err) {
-                    reject(err);
-                }
-                else {
-                    let jsonData = null;
+            })
+        }
+        catch(e) {
+            console.log('READ JSON Error: ', e);
+        }
 
-                    try {
-                        if(content) {
-                            jsonData = JSON.parse(content);
-                        }
-                        else {
-                            jsonData = {}
-                        }
-                    }
-                    catch(e) {
-                        reject('JSON Error', e)
-                    }
-                    
-                    Object.assign(this.data, jsonData);
-                    resolve(jsonData);
+        try {
+            let jsonData = null;
+
+            if(content) {
+                jsonData = JSON.parse(content);
+            }
+            else {
+                jsonData = {}
+            }
+            Object.assign(this.data, jsonData);
+        }
+        catch(e) {
+            console.log('PARSE JSON Error ', e);
+        }
+    }
+
+    delete(key) {
+        let result = {success: true};
+
+        if(typeof key === 'string') {
+            if(key in this.data) {
+                delete this.data[key];
+            }
+        }
+        else if(Object.prototype.toString.call(key) === '[object Array]') {
+            key.forEach((delKey) => {
+                if(key in this.data) {
+                    delete this.data[delKey];
                 }
             });
-        });
+        }
+        else {
+            this.data = {};
+        }
+
+        this.set(this.data);
+
+        return Promise.resolve(result);
     }
 
     get(key) {
         return new Promise((resolve, reject) => {
-            let returnData = this.data;
-
-            if(key in this.data) {
+            let returnData = {};
+            
+            if(typeof key === 'string' && key in this.data) {
                 returnData = this.data[key];
+            }
+            else if(Object.prototype.toString.call(key) === '[object Array]') {
+                key.forEach((returnKey) => {
+                    if(returnKey in this.data) {
+                        returnData[returnKey] = this.data[returnKey];
+                    }
+                });
+            }
+            else {
+                returnData = this.data;
             }
 
             resolve(returnData);
@@ -70,21 +99,14 @@ class Base {
     }
 
     writeFileData(resolve, reject) {
-        if(this.reading) {
-            setTimeout(() => {
-                this.writeFileData(resolve, reject);
-            }, 300);
-        }
-        else {
-            fs.writeFile(path.join(this.basePath, this.path), JSON.stringify(this.data, null, '\t'), (err) => {
-                if(err) {
-                    reject(err)
-                }
-                else {
-                    resolve();
-                }
-            });
-        }
+        fs.writeFile(path.join(this.basePath, this.path), JSON.stringify(this.data, null, '\t'), (err) => {
+            if(err) {
+                reject(err)
+            }
+            else {
+                resolve(this.data);
+            }
+        });
     }
 }
 

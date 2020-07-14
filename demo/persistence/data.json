@@ -1,5 +1,6 @@
 {
-	"name": "abc",
 	"age": "111",
-	"sex": "jjj"
+	"sex": "jjj",
+	"code": "980000",
+	"department": "nnnnnn"
 }

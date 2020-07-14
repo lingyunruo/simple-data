@@ -3,9 +3,7 @@ const Base = require('../src/base');
 const path = require('path');
 
 const data = new Base({
-    // 存储数据的json文件
     jsonFile: 'data.json',
-    // 存储数据的根目录
     basePath: path.join(__dirname, './persistence')
 });
 
@@ -21,12 +19,23 @@ data.set({
     name: 'erf'
 });
 data.set({
-    name: 'abggg'
+    code: '980000'
 });
+
+data.delete(['name']);
+data.delete('name');
+
 data.set({
-    name: 'abcaa'
+    department: 'nnnnnn'
+})
+    .then((res) => {
+        console.log(res, 'set then');
+    });
+
+data.get().then((res) => {
+    console.log(res, 'read all');
 });
-data.set({
-    name: 'abjjjc'
+data.get(['name', 'department']).then((res) => {
+    console.log(res, 'read part');
 });
 ```
