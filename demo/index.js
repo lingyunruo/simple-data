@@ -6,6 +6,16 @@ const data = new Base({
     basePath: path.join(__dirname, './persistence')
 });
 
+const data2 = new Base({
+    jsonFile: 'data2.json',
+    basePath: path.join(__dirname, './persistence')
+});
+
+
+data2.set({
+    hello: '你好'
+});
+
 data.set({
     name: 'abc',
     age: '111'

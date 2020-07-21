@@ -1,22 +1,32 @@
 const path = require('path');
-const fs = require('fs');
-
-let setTimer = null;
-
+const fs = require('fs-extra');
 class Base {
     constructor(option) {
         // 每个base对应一个 json文件
         this.path = option.jsonFile;
         this.basePath = option.basePath;
+        this.filePath = path.join(this.basePath, this.path);
         this.data = {};
-        this.readFileData();
+        this.setTimer = null;
+
+        try {
+            fs.accessSync(this.filePath, fs.constants.W_OK | fs.constants.R_OK)
+            this.readFileData();
+        }
+        catch(e) {
+            this.createData();
+        }
+    }
+
+    createData() {
+        fs.outputFileSync(this.filePath, JSON.stringify({}))
     }
 
     readFileData() {
         let content = '';
         
         try {
-            content = fs.readFileSync(path.join(this.basePath, this.path), {
+            content = fs.readFileSync(this.filePath, {
                 encoding: 'utf8'
             })
         }
@@ -91,15 +101,15 @@ class Base {
             this.data[key] = obj[key]
         });
         return new Promise((resolve, reject) => {
-            clearTimeout(setTimer);
-            setTimer = setTimeout(() => {
+            clearTimeout(this.setTimer);
+            this.setTimer = setTimeout(() => {
                 this.writeFileData(resolve, reject);
             }, 100);
         });
     }
 
     writeFileData(resolve, reject) {
-        fs.writeFile(path.join(this.basePath, this.path), JSON.stringify(this.data, null, '\t'), (err) => {
+        fs.outputFile(this.filePath, JSON.stringify(this.data, null, '\t'), (err) => {
             if(err) {
                 reject(err)
             }
