@@ -5,6 +5,7 @@ class Base {
         // 每个base对应一个 json文件
         this.path = option.jsonFile;
         this.basePath = option.basePath;
+        this.encoding = option.encoding || 'utf-8';
         this.filePath = path.join(this.basePath, this.path);
         this.data = {};
         this.setTimer = null;
@@ -27,7 +28,7 @@ class Base {
         
         try {
             content = fs.readFileSync(this.filePath, {
-                encoding: 'utf8'
+                encoding: this.encoding
             })
         }
         catch(e) {
@@ -109,7 +110,9 @@ class Base {
     }
 
     writeFileData(resolve, reject) {
-        fs.outputFile(this.filePath, JSON.stringify(this.data, null, '\t'), (err) => {
+        fs.outputFile(this.filePath, JSON.stringify(this.data, null, '\t'), {
+            encoding: this.encoding
+        }, (err) => {
             if(err) {
                 reject(err)
             }
